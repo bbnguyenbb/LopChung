@@ -1,0 +1,118 @@
+﻿OOP trong C#
+1 class có 4 thành phần chính
+- các fields (private 99%)
+các thành phần còn lại thường có bổ từ (access modify - public 99%)
+- constructor
+- property (trong java getter setter)
+- method
+
+tối giản c#
+hầu như không còn field chỉ còn auto property 
+các constructor thường không được dùng vì có thể dùng object initialization khi khởi tạo đối tượng
+vậy nên 1 class trong # chỉ đa phần còn lại property và các method với bổ từ public (99%)
+
+một phương thức mà chỉ có 1 câu lệnh có thể thay thế thành expression body
+
+(*) abstraction (Abstract)
+sử dụng khi 
+=> muốn làm giảm độ phức tạp khi triển khai 1 class nào đó (80%)
+=> thiếu các phương tiện vật chất
+=> do yếu tố con người
+
+nguyên tắc
+=> một phương thức hay thuộc tính là abstract thì class phải là abstract 
+=> một class là abstract thì chưa chắc bên trong nó có phương thức hay thuộc tính là abstract
+=> một class là abstract sẽ không tạo đối tượng từ class đó
+
+
+(*) inheritance (:)
+sử dụng khi
+=> giảm thiểu khả năng vận hành code
+=> tái sử dụng code từ các đối tượng trước đó
+
+nguyên tắc:
+=> con kế thừa cha, cha có cái gì thì con có thể sử dụng cái đó, trừ khi cha để từ private
+=> con kế thừa cha, mà cha là abstract thì con phải viết lại các abstract mà cha có thông qua từ khóa override, nếu không class con cũng là abstract
+=> 1 con chỉ được phép kế thừa từ 1 cha duy nhất (đơn kế thừa)
+
+(*) encapsulation (property, access modify)
+sử dụng khi
+=> che dấu bảo vệ tính năng quan trọng, ngăn chặn truy cập tính năng không được phép
+=> kế thừa chỉ dùng đúng những thông tinh chức năng cần thiết quan trọng
+
+nguyên tắc
+=> property có thể get và set, hoặc chỉ get mà private set, hoặc chỉ set mà private get (3 trạng thái)
+=> access modify (khởi tạo đối tượng không quan trọng, quan trọng đang đứng [đang code] tại class nào):
+	* public ai dùng cũng được (project khác nhau đều gọi được)
+	* internal trong cùng namespace <=> assembly => cùng project là được
+	* protected chỉ cho các class con kế thừa sử dụng dù cha ở đồ án này, con ở đồ án khác
+	* internal protected => thỏa 1 trong 2, hoặc protected hoặc internal là được
+	* private chỉ đứng tại class đó mới được dùng, ra khỏi class đó không dùng được
+	* private protected => không có nghĩa là 1 trong 2 mà là chỉ cho class con trong cùng đồ án mới được, class con khác đồ án không được gọi
+
+
+(*) polymorphism (override, overload, interface)
+sử dụng khi:
+=> viết lại 1 phương thức nào đó từ class cha (override)
+=> cho phép có nhiều hơn 1 phương thức trùng tên chỉ khác tham số hay kiểu của tham số (đa hình thái), quá trình này giúp cùng 1 hình thái, cùng 1 tính năng nhưng có các cách gọi với các tham số khác nhau
+=> khác với abstract là đưa ra 1 tính năng chung mà các lớp con có thể ghi đè (không ép), thì interface là (dạng chuẩn chung - giao diện chung) đưa ra 1 tính năng chung mà các class không liên quan nhau đều buộc phải thực thi, chủ yếu là tính năng phải nhất quán với nhau (trủng tên bao gồm cà tham số và kiểu trả về cho tính năng, nhưng code bên trong mỗi class có thể viết khác nhau)
+
+nguyên tắc:
+=> với override:
+	* buộc phải thêm vào trước phương thức
+	* con kế thừa cha thì phương thức cha phải có từ virtual thì con mới được override (chỉnh sửa, viết lại), chứ không phải kế thừa là override lại tùm lum như một số ngôn ngữ oop khác
+=> với overload: (dùng ở constructor và method)
+	* trong c# trừ khi cần thiết mới dùng
+	* với constructor: thay thề bằng object initialization, nên không cần thiết thì không nên dùng constructor, nên không nhất thiết overload
+	* với method: thay bằng optional param và named argument cho phương thức nên giảm thiểu các phương thức trùng tên rất nhiều, nên không cần thiết thì không dùng overload cho method
+=> interface:  tạo ra các Interface nhỏ và cụ thể hơn thay vì một Interface lớn.  Tuân theo tinh thần của Interface Segregation Principle (ISP) 1 trong 5 nguyên tắc Solid .
+
+=> async/await là bất đồng bộ
+	* trong phương thức có await thì buộc trên khai báo phương thức phải dùng async
+	* nếu phương thức khai báo có async mà bên trong không có await thì vẫn là đồng bộ
+	* trong c# sẽ xây dựng 1 số phương thức bao gần bất đồng bộ sẵn, nhưng khi dùng thì phía trước nên có từ await nếu không vẫn là đồng bộ
+	* không phải lúc nào cũng dùng async/await nhưng khi học thì nên áp dụng cho quen tay
+
+//==================================================
+trong mô hình ORM (Object Relational Mapping) thì:
+EFCORE = entity framework core (Linq to sql)
+=>database first
+=>code first
+1) data annotation(*)
+2) fluent api
+=> nếu có cả hai cùng lúc thì ưu tiên fluent api
+
+EFCore khi dùng cần lưu ý khi trả về giá trị:
+* ienumerable (nền tảng từ ienumerator) trong system.collection
+=> làm trong bộ nhớ, không thích hợp phân trang, thường dùng cho dữ liệu cần bộ nhớ hay dữ liệu nhỏ
+ ví dụ: var log = context.Logs.Where(log => log.Id == 1).ToList();
+ => chạy về sql lấy dữ liệu bằng câu lệnh select * from log, đổ vào bộ nhớ trả về, rồi từ bộ nhớ mới dùng where
+
+* iqueryable (nền tảng từ linq) trong system.linq
+=> làm trực tiếp trên sql, thích hợp phân trang, cần cho dữ liệu lớn 
+ ví dụ: var log = context.Logs.Where(log => log.Id == 1);
+ => chạy về sql thực thi luô câu lệnh select * from log where log.id==1, rồi trả trực tiếp về.
+
+
+trong CRUD (create, read, update, delete) khi insert, delete, update ta có thể dùng 1 trong 3 cách:
+ a) await context.Logs.AddAsync(log2);	=> nhanh nhất, thêm vào từ table ảo, 
+ b) await context.AddAsync(log2);		=> có thể thêm bất kỳ đối tượng nào vào, và context sẽ dò tìm phù hợp
+ c) await context.AddAsync<Log>(log2);	=> generic, chỉ rõ đối tượng cần thêm vào, khi cần dùng generic, khi cần áp dụng các design pattern 
+ khuyến thích dùng cách a hiện tại.
+
+Khi dùng các phương thức trong EFCore cần phân biệt đâu là các phương thức mặc định hỗ trợ sẵn, đâu là các phương thức được tạo nên từ lambda, tức là các delegate (Action, Func, Predicate):
+* các phương thức có sẵn sẽ nhanh hơn nhưng hạn chế khi triển khai
+  ví dụ:  var log1 = await context.Logs.FindAsync(1); => chỉ tìm trên cột khóa, theo điều kiện bằng
+
+* các phương thức được tạo nên từ lambda thì chậm hơn nhưng uyển chuyển hơn
+  ví dụ: var log = context.Logs.Where(log => log.Id == 1); => có thể tìm trên các cột khác theo điều kiện khác nhau
+
+//===================================================
+Data Annotation:
+* kiểu mà có ? = null. ngược lại không có là not null cho database khi tạo ra
+* [Table("tenbang")] => dùng trên đầu của class, thay đổi tên bảng, nếu không chỉ ra thì lấy tên class làm tên bảng
+* [Column("id")] => dủng trên đầu thuộc tính, thay đổi tên cột, nếu không chỉ ra thì lấy tên thuộ tính làm tên cột
+* [Key] => cột mà kiểu int là khóa chính thì mặc định là tự động tăng, đã là khóa chính thì mặc định bên dưới csdl là not null
+* [DatabaseGenerated(DatabaseGeneratedOption.None)] => cột kiểu int muốn là khóa chính mà không dùng tự động tăng 
+* [Column("login_time", TypeName = "datetime")] => Typename chỉ ra kiểu dữ liệu bên dưới database
+
