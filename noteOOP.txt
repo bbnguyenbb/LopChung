@@ -82,6 +82,7 @@ EFCORE = entity framework core (Linq to sql)
 2) fluent api
 => nếu có cả hai cùng lúc thì ưu tiên fluent api
 
+
 EFCore khi dùng cần lưu ý khi trả về giá trị:
 * ienumerable (nền tảng từ ienumerator) trong system.collection
 => làm trong bộ nhớ, không thích hợp phân trang, thường dùng cho dữ liệu cần bộ nhớ hay dữ liệu nhỏ
@@ -95,10 +96,16 @@ EFCore khi dùng cần lưu ý khi trả về giá trị:
 
 
 trong CRUD (create, read, update, delete) khi insert, delete, update ta có thể dùng 1 trong 3 cách:
+ví dụ thêm
  a) await context.Logs.AddAsync(log2);	=> nhanh nhất, thêm vào từ table ảo, 
  b) await context.AddAsync(log2);		=> có thể thêm bất kỳ đối tượng nào vào, và context sẽ dò tìm phù hợp
  c) await context.AddAsync<Log>(log2);	=> generic, chỉ rõ đối tượng cần thêm vào, khi cần dùng generic, khi cần áp dụng các design pattern 
  khuyến thích dùng cách a hiện tại.
+
+tương tự cho xóa (delete) thì dùng remove nhưng cập nhật thì không cần phải update
+tất cả sao đó phải SaveChanges...
+nhưng có thể dùng ExecuteUpdate và ExecuteDelete (lưu ý không có ExecuteAdd), mà không cần SaveChanges
+=> nhanh nhưng nó là no stracking
 
 Khi dùng các phương thức trong EFCore cần phân biệt đâu là các phương thức mặc định hỗ trợ sẵn, đâu là các phương thức được tạo nên từ lambda, tức là các delegate (Action, Func, Predicate):
 * các phương thức có sẵn sẽ nhanh hơn nhưng hạn chế khi triển khai
@@ -108,11 +115,52 @@ Khi dùng các phương thức trong EFCore cần phân biệt đâu là các ph
   ví dụ: var log = context.Logs.Where(log => log.Id == 1); => có thể tìm trên các cột khác theo điều kiện khác nhau
 
 //===================================================
-Data Annotation:
+Data Annotation dùng để sinh table bên dưới database:
 * kiểu mà có ? = null. ngược lại không có là not null cho database khi tạo ra
+	=> c# cung cấp từ khóa required buộc khi khởi tạo đối tượng phải nhập giá trị, nếu không sẽ gây lỗi, 
+	=> nhưng giá trị nhập vẫn được nhập null
+	=> không liên quan data annotation nên bên dưới database vẫn cho phép null
+	ví dụ:
+	[Column("employee_id")]
+    public required int? EmployeeId { get; set; }
+	
+	khi tạo
+	Log log1 = new()
+    {
+        Id = 1,
+        EmployeeId = null, //cho phép nhập null
+        LoginTime = DateTime.Now,
+        LogOutTime = DateTime.Now.AddDays(1)
+    };
+
+* [Required] yêu cầu bắt buộc phải nhập như từ khóa required của c# nhưng không được phép nhập giá trị null, và bên dưới database là not null, 
+	=> nếu có cả ? là null và [Required] thì ưu tiên [Required] nên là not null
+	ví dụ:
+	[Column("employee_id"), Required] //nhanh hơn
+    public required int? EmployeeId { get; set; } = null; //cho phép khởi tạo ban đầu là null vì có ?
+
+	hoặc 
+	[Column("login_time", TypeName = "datetime")]
+    [Required]
+    public DateTime LoginTime { get; set; }
+
+	khi tạo
+	Log log1 = new()
+    {
+        Id = 1,
+        EmployeeId = 1, 
+		//EmployeeId = null => không cho phép nhập null
+        LoginTime = DateTime.Now,
+        LogOutTime = DateTime.Now.AddDays(1)
+    };
+	
 * [Table("tenbang")] => dùng trên đầu của class, thay đổi tên bảng, nếu không chỉ ra thì lấy tên class làm tên bảng
 * [Column("id")] => dủng trên đầu thuộc tính, thay đổi tên cột, nếu không chỉ ra thì lấy tên thuộ tính làm tên cột
 * [Key] => cột mà kiểu int là khóa chính thì mặc định là tự động tăng, đã là khóa chính thì mặc định bên dưới csdl là not null
 * [DatabaseGenerated(DatabaseGeneratedOption.None)] => cột kiểu int muốn là khóa chính mà không dùng tự động tăng 
 * [Column("login_time", TypeName = "datetime")] => Typename chỉ ra kiểu dữ liệu bên dưới database
+
+* note có 1 số chỉ thị trên đầu thuộc tính hay phương thức nhưng không phải của data annotation, nên không đươc dùng
+ví dụ
+[AllowNull], [DisallowNull],....
 

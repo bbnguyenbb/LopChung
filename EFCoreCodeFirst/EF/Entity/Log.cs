@@ -18,10 +18,13 @@ public partial class Log
     public int Id { get; set; }
 
     //mặc định là null
+    //[Column("employee_id"), Required]
+    //public required int? EmployeeId { get; set; } = null;
     [Column("employee_id")]
     public int? EmployeeId { get; set; } = null;
 
     [Column("login_time", TypeName = "datetime")]
+    //[Required]
     public DateTime LoginTime { get; set; }
 
     [Column("logout_time", TypeName = "datetime")]
