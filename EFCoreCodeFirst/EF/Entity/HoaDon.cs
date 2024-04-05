@@ -11,7 +11,8 @@ public partial class HoaDon //bang 1
     [Column(TypeName = "datetime")]
     public DateTime NgayTao { get; set; }
 
-    [InverseProperty("HoaDon")]
+    [InverseProperty("HoaDon")] //tôi là bảng 1 liên kết đến bảng nhiều
     public virtual ICollection<HoaDonChiTiet> HoaDonChiTiets { get; set; } = [];
+
 
 }

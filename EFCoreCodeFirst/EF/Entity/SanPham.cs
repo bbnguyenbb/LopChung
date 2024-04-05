@@ -11,5 +11,6 @@ public partial class SanPham
     [Column(TypeName = "nvarchar(50)")]
     public string TenSP { get; set; } = null!;
 
+    [InverseProperty("SanPham")]
     public virtual ICollection<HoaDonChiTiet> HoaDonChiTiets { get; set; } = [];
 }

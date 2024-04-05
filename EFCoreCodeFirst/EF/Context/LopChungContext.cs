@@ -21,6 +21,11 @@ public partial class LopChungContext : DbContext
     public virtual DbSet<SanPham> SanPhams { set; get; }
     public virtual DbSet<HoaDonChiTiet> HoaDonChiTiets { set; get; }
 
+    public virtual DbSet<KhachHang> KhachHangs { set; get; }
+    public virtual DbSet<TaiKhoan> TaiKhoans { set; get; }
+
+
+    public virtual DbSet<NhanVien> NhanViens { set; get; }
 
     //dùng để kết nối đến sql server
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
