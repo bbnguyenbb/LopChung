@@ -86,12 +86,24 @@ EFCORE = entity framework core (Linq to sql)
 EFCore khi dùng cần lưu ý khi trả về giá trị:
 * ienumerable (nền tảng từ ienumerator) trong system.collection
 => làm trong bộ nhớ, không thích hợp phân trang, thường dùng cho dữ liệu cần bộ nhớ hay dữ liệu nhỏ
- ví dụ: var log = context.Logs.Where(log => log.Id == 1).ToList();
+ ví dụ: 
+	IEnumerable<Log> log1 = context.Logs;
+    log1 = log1.Where(log => log.Id > 0);
+    foreach(var item in log1)
+    {
+        Console.WriteLine(item);
+    }
  => chạy về sql lấy dữ liệu bằng câu lệnh select * from log, đổ vào bộ nhớ trả về, rồi từ bộ nhớ mới dùng where
 
 * iqueryable (nền tảng từ linq) trong system.linq
 => làm trực tiếp trên sql, thích hợp phân trang, cần cho dữ liệu lớn 
- ví dụ: var log = context.Logs.Where(log => log.Id == 1);
+ ví dụ: 
+	IQueryable<Log> log2 = context.Logs;
+    log2 = log2.Where(log => log.Id > 0);
+    foreach(var item in log2)
+    {
+        Console.WriteLine(item);
+    }
  => chạy về sql thực thi luô câu lệnh select * from log where log.id==1, rồi trả trực tiếp về.
 
 
@@ -164,3 +176,14 @@ Data Annotation dùng để sinh table bên dưới database:
 ví dụ
 [AllowNull], [DisallowNull],....
 
+
+1 employee có nhiều dependent
+1 dependent có 1 nhân viên
+
+//sql cầm khóa chính bảng 1 để sang bảng nhiều
+
+//giữ luật sql, sao đó làm tiếp trong class
+//thêm từ virtual cho cả hai bên
+
+bảng 1 sẽ có danh sách của bảng nhiều
+bảng nhiều sẽ có đối tượng của bảng 1

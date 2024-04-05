@@ -1,21 +1,22 @@
 ﻿//import của thư viện
 
 
+#region old
 using EFCoreCodeFirst.EF.Context;
 using EFCoreCodeFirst.EF.Entity;
 
-using Microsoft.EntityFrameworkCore;
+await using(LopChungContext context = new())
+{
+    if(await context.Database.EnsureDeletedAsync())
+    {
+        await Console.Out.WriteLineAsync("delete");
+    }
 
-//await using(LopChungContext context = new())
-//{
-//    if(await context.Database.EnsureDeletedAsync())
-//    {
-//        await Console.Out.WriteLineAsync("delete");
-//    }
+    await context.Database.EnsureCreatedAsync();
+    Console.WriteLine("create");
 
-//    await context.Database.EnsureCreatedAsync();
-//    Console.WriteLine("create");
-//}
+
+}
 
 //thêm dữ liệu vào table Log
 //await using(LopChungContext context = new())
@@ -93,76 +94,94 @@ using Microsoft.EntityFrameworkCore;
 
 
 //delete = update
+//await using(LopChungContext context = new())
+//{
+//await context.Logs.Where(log => log.Id == 1).ExecuteDeleteAsync();
+
+//var log = context.Logs.Where(log => log.Id == 1);
+
+//if(log is not null)
+//{
+//    foreach(var item in log)
+//    {
+//        context.Logs.Remove(item);
+//    }
+
+//    //context.Logs.RemoveRange(log);
+//}
+
+//==================================
+//var log1 = await context.Logs.FindAsync(1);
+
+//if(log1 is not null)
+//{
+//    //foreach (var item in log)
+//    //{
+//    //    context.Logs.Remove(item);
+//    //}
+
+//    context.Logs.RemoveRange(log1);
+//}
+
+
+//await context.SaveChangesAsync();
+//}
+
+//await using(LopChungContext context = new())
+//{
+//    //ienumerable nằm trong system.collection
+//    //làm trong bộ nhớ. có thể duyệt qua bằng .foreach
+//    //không thích hợp phân trang
+//    //thường dùng cho dữ liệu cần bộ nhớ hay dữ liệu nhỏ
+//    IEnumerable<Log> log1 = context.Logs;
+//    log1 = log1.Where(log => log.Id > 0);
+//    foreach(var item in log1)
+//    {
+//        Console.WriteLine(item);
+//    }
+
+//    //iqueryable nằm trong system.linq
+//    //làm trực tiếp trên sql
+//    //thích hợp phân trang
+//    //cần cho dữ liệu lớn 
+//    IQueryable<Log> log2 = context.Logs;
+//    log2 = log2.Where(log => log.Id > 0);
+//    foreach(var item in log2)
+//    {
+//        Console.WriteLine(item);
+//    }
+
+//    //còn như thế thì đều lọc sẵn từ sql
+//    var log3 = context.Logs.Where(log => log.Id > 0).AsEnumerable();
+//    var log4 = context.Logs.Where(log => log.Id > 0); //mặc định
+
+//    foreach(var item in log3)
+//    {
+//        Console.WriteLine(item);
+//    }
+
+
+//    //duyệt nhanh qua bằng ForEachAsync
+//    await context.Logs.ForEachAsync(Console.WriteLine);
+
+//    //duyệt nhanh qua bằng foreach trả về List<Log>
+//    context.Logs.ToList().ForEach(Console.WriteLine);
+//}
+#endregion
+
+
 await using(LopChungContext context = new())
 {
-    //await context.Logs.Where(log => log.Id == 1).ExecuteDeleteAsync();
 
-    //var log = context.Logs.Where(log => log.Id == 1);
+    var job = new Job { JobName = "it" };
+    job.Emps.Add(new Emp { EmpName = "dat" });
+    job.Emps.Add(new Emp { EmpName = "hai" });
+    job.Emps.Add(new Emp { EmpName = "huy" });
 
-    //if(log is not null)
-    //{
-    //    foreach(var item in log)
-    //    {
-    //        context.Logs.Remove(item);
-    //    }
+    context.Jobs.Add(job);
+    context.SaveChanges();
 
-    //    //context.Logs.RemoveRange(log);
-    //}
-
-    //==================================
-    //var log1 = await context.Logs.FindAsync(1);
-
-    //if(log1 is not null)
-    //{
-    //    //foreach (var item in log)
-    //    //{
-    //    //    context.Logs.Remove(item);
-    //    //}
-
-    //    context.Logs.RemoveRange(log1);
-    //}
-
-
-    //await context.SaveChangesAsync();
 }
 
-await using(LopChungContext context = new())
-{
-    //ienumerable nằm trong system.collection
-    //làm trong bộ nhớ. có thể duyệt qua bằng .foreach
-    //không thích hợp phân trang
-    //thường dùng cho dữ liệu cần bộ nhớ hay dữ liệu nhỏ
-    IEnumerable<Log> log1 = context.Logs;
-    log1 = log1.Where(log => log.Id > 0);
-    foreach(var item in log1)
-    {
-        Console.WriteLine(item);
-    }
-
-    //iqueryable nằm trong system.linq
-    //làm trực tiếp trên sql
-    //thích hợp phân trang
-    //cần cho dữ liệu lớn 
-    IQueryable<Log> log2 = context.Logs;
-    log2 = log2.Where(log => log.Id > 0);
-    foreach(var item in log2)
-    {
-        Console.WriteLine(item);
-    }
-
-    //còn như thế thì đều lọc sẵn từ sql
-    var log3 = context.Logs.Where(log => log.Id > 0).AsEnumerable();
-    var log4 = context.Logs.Where(log => log.Id > 0); //mặc định
-
-    foreach(var item in log3)
-    {
-        Console.WriteLine(item);
-    }
 
 
-    //duyệt nhanh qua bằng ForEachAsync
-    await context.Logs.ForEachAsync(Console.WriteLine);
-
-    //duyệt nhanh qua bằng foreach trả về List<Log>
-    context.Logs.ToList().ForEach(Console.WriteLine);
-}
